@@ -1,40 +1,52 @@
 package com.rest.product.service;
 
-import com.rest.product.model.Price;
-import com.rest.product.model.Product;
-import com.rest.product.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import jl.products.model.JlProducts;
+import jl.products.model.Price;
+import jl.products.model.Product;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.rest.product.repository.ProductSpecifications.hasPriceChangedOrdered;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-@Service
+
 public class ProductService {
 
-    private ProductRepository productRepository;
+    private RestTemplate restTemplate;
+    private String restURI;
 
-    public ProductService(@Autowired ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public ProductService(RestTemplate restTemplate, String restURI) {
+        this.restTemplate = restTemplate;
+        this.restURI = restURI;
     }
 
-    public List<Product> getProductsWithPriceDrops(final String category) {
-        List<Product> productsWithChangedPrice = productRepository.findAll(hasPriceChangedOrdered(category));
+    public List<Product> getProductsWithPriceDrops() {
+        JlProducts jlProducts = restTemplate.getForObject(restURI, JlProducts.class);
 
-        List<Product> productsWithReducedPrice = productsWithChangedPrice.stream()
-                .filter(this::isPriceReduced)
-                .collect(toList());
-
-        return productsWithReducedPrice;
+        List<Product> reducedProducts = new ArrayList<>();
+        if (jlProducts != null) {
+            List<Product> allProducts = jlProducts.getProducts();
+            if (allProducts != null) {
+                reducedProducts = allProducts
+                        .stream()
+                        .filter(this::isPriceReduced)
+                        .collect(toList());
+            }
+        }
+        return reducedProducts;
     }
 
     private boolean isPriceReduced(Product product) {
-        Iterator<Price> priceIterator = product.getPricesList().iterator();
-        Price currentPrice = priceIterator.next();
-        Price previousPrice = priceIterator.next();
-        return currentPrice.getPrice() < previousPrice.getPrice();
+        Price price = product.getPrice();
+        String now = price.getNow();
+        String was = price.getWas();
+        boolean isReduced = false;
+        if (isNotEmpty(was) && isNotEmpty(now)) {
+            isReduced = Float.valueOf(now) < Float.valueOf(was);
+
+        }
+        return isReduced;
     }
 }

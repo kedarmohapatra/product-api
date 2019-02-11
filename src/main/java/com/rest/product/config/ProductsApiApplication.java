@@ -1,14 +1,12 @@
-package com.rest.product;
+package com.rest.product.config;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.context.annotation.Import;
 
-@EnableJpaRepositories("com.rest.product.repository")
-@EntityScan("com.rest.product.model")
-@ComponentScan({"com.rest.product.controller","com.rest.product.service","com.rest.product.exception"})
+@ComponentScan({"com.rest.product.controller","com.rest.product.service"})
+@Import(AppConfig.class)
 @SpringBootApplication
 public class ProductsApiApplication {
 

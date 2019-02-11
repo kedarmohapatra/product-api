@@ -1,27 +1,12 @@
-package com.rest.product.model;
+package com.rest.product.dto;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-@Entity
-public class ColorSwathe {
-
-    @Id
-    private String skuid;
-
-    private String productId;
+public class ColorDto {
     private String color;
-
-    public String getProductId() {
-        return productId;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
+    private String rgbColor;
+    private String skuid;
 
     public String getColor() {
         return color;
@@ -29,6 +14,14 @@ public class ColorSwathe {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public String getRgbColor() {
+        return rgbColor;
+    }
+
+    public void setRgbColor(String rgbColor) {
+        this.rgbColor = rgbColor;
     }
 
     public String getSkuid() {
@@ -45,20 +38,20 @@ public class ColorSwathe {
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        ColorSwathe that = (ColorSwathe) o;
+        ColorDto colorDto = (ColorDto) o;
 
         return new EqualsBuilder()
-                .append(productId, that.productId)
-                .append(color, that.color)
-                .append(skuid, that.skuid)
+                .append(color, colorDto.color)
+                .append(rgbColor, colorDto.rgbColor)
+                .append(skuid, colorDto.skuid)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-                .append(productId)
                 .append(color)
+                .append(rgbColor)
                 .append(skuid)
                 .toHashCode();
     }

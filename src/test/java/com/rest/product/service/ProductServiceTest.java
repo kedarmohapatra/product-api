@@ -1,57 +1,60 @@
 package com.rest.product.service;
 
-import com.rest.product.model.Product;
-import com.rest.product.repository.ProductRepository;
+import jl.products.model.JlProducts;
+import jl.products.model.Product;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.rest.product.builder.ProductBuilder.*;
-import static com.rest.product.repository.ProductSpecifications.hasPriceChangedOrdered;
+import static com.rest.product.builder.ProductBuilder.createFirstProduct;
+import static com.rest.product.builder.ProductBuilder.createThirdProduct;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProductServiceTest {
 
+    private final String restUri = "restUri";
+
     @Mock
-    private ProductRepository productRepository;
+    private RestTemplate restTemplate;
     private ProductService productService;
 
     @Before
     public void setUp() throws Exception {
-        productService = new ProductService(productRepository);
+        productService = new ProductService(restTemplate, restUri);
     }
 
     @Test
     public void shouldReturnEmptyListIfPriceHasNotDropped(){
-        when(productRepository.findAll(any(Specification.class))).thenReturn(new ArrayList<>());
+        JlProducts aaa = new JlProducts();
+        when(restTemplate.getForObject(restUri, JlProducts.class)).thenReturn(aaa);
 
-        List<Product> productsWithPriceDrops = productService.getProductsWithPriceDrops(CATEGORY_1);
+        List<Product> productsWithPriceDrops = productService.getProductsWithPriceDrops();
 
         assertThat(productsWithPriceDrops, is(emptyList()));
     }
 
     @Test
     public void shouldReturnProductsIfPriceHasDropped(){
-        List<Product> products = Arrays.asList(createFirstProduct(true), createThirdProduct(true));
-        when(productRepository.findAll(any(Specification.class))).thenReturn(products);
+        List<Product> products = Arrays.asList(createFirstProduct(), createThirdProduct());
+        JlProducts jlProducts = new JlProducts();
+        jlProducts.setProducts(products);
+        when(restTemplate.getForObject(restUri, JlProducts.class)).thenReturn(jlProducts);
 
-        List<Product> productsWithPriceDrops = productService.getProductsWithPriceDrops(CATEGORY_1);
+        List<Product> productsWithPriceDrops = productService.getProductsWithPriceDrops();
 
         assertThat(productsWithPriceDrops.size(), is(equalTo(1)));
+        assertThat(productsWithPriceDrops.get(0), is(equalTo(createFirstProduct())));
     }
 }

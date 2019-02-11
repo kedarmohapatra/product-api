@@ -1,15 +1,11 @@
 package com.rest.product.builder;
 
-import com.rest.product.model.ColorSwathe;
-import com.rest.product.model.Price;
-import com.rest.product.model.Product;
+import jl.products.model.ColorSwatch;
+import jl.products.model.Price;
+import jl.products.model.Product;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
-
-import static java.util.Comparator.comparing;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductBuilder {
     private static final String PRODUCT_1 = "1";
@@ -26,74 +22,45 @@ public class ProductBuilder {
     public static final String CATEGORY_1 = "category 1";
     public static final String CATEGORY_2 = "category 2";
 
-    public static Product createFirstProduct(boolean sortedPrice) {
+    public static Product createFirstProduct() {
         Product product = createProduct(PRODUCT_1, PRODUCT_TITLE_1, CATEGORY_1);
+        product.setPrice(createPrice("10", "20", "", ""));
 
-        Set<Price> priceList = initializePriceList(sortedPrice);
-
-        priceList.add(createPrice(PRODUCT_1, 10, LocalDate.of(2011, 2, 23)));
-        priceList.add(createPrice(PRODUCT_1, 20, LocalDate.of(2000, 3, 23)));
-        product.setPricesList(priceList);
-
-        Set<ColorSwathe> colorSwathes = createColorSwathes(PRODUCT_1, "sku3", "sku4");
-        product.setColorSwathes(colorSwathes);
+        List<ColorSwatch> colorSwathes = createColorSwathes(PRODUCT_1, "sku3", "sku4");
+        product.setColorSwatches(colorSwathes);
 
         return product;
     }
 
-    public static Product createSecondProduct(boolean sortedPrice) {
+    public static Product createSecondProduct() {
         Product product = createProduct(PRODUCT_2, PRODUCT_TITLE_2, CATEGORY_1);
+        product.setPrice(createPrice("10", "", "", ""));
 
-        Set<Price> priceList = initializePriceList(sortedPrice);
-
-        priceList.add(createPrice(PRODUCT_2, 10, LocalDate.of(2011, 2, 23)));
-        product.setPricesList(priceList);
-
-        Set<ColorSwathe> colorSwathes = createColorSwathes(PRODUCT_2, "sku1", "sku2");
-        product.setColorSwathes(colorSwathes);
+        List<ColorSwatch> colorSwathes = createColorSwathes(PRODUCT_1, "sku3", "sku4");
+        product.setColorSwatches(colorSwathes);
 
         return product;
 
     }
 
-    public static Product createThirdProduct(boolean sortedPrice) {
+    public static Product createThirdProduct() {
         Product product = createProduct(PRODUCT_3, PRODUCT_TITLE_3, CATEGORY_2);
+        product.setPrice(createPrice("12", "10", "12", ""));
 
-        Set<Price> priceList = initializePriceList(sortedPrice);
-
-        priceList.add(createPrice(PRODUCT_3, 10, LocalDate.of(2011, 2, 23)));
-        priceList.add(createPrice(PRODUCT_3, 12, LocalDate.of(2013, 2, 23)));
-        priceList.add(createPrice(PRODUCT_3, 10, LocalDate.of(2008, 2, 23)));
-        product.setPricesList(priceList);
-
-        Set<ColorSwathe> colorSwathes = createColorSwathes(PRODUCT_3, "sku5", "sku6");
-        product.setColorSwathes(colorSwathes);
+        List<ColorSwatch> colorSwathes = createColorSwathes(PRODUCT_1, "sku3", "sku4");
+        product.setColorSwatches(colorSwathes);
 
         return product;
 
     }
 
-    private static Set<Price> initializePriceList(boolean sortedPrice) {
-        Set<Price> priceList;
-        if (sortedPrice)
-            priceList = new TreeSet<>(comparing(Price::getDate).reversed());
-        else
-            priceList = new HashSet<>();
-        return priceList;
-    }
-
-    public static Product createFourthProduct(boolean sortedPrice) {
+    public static Product createFourthProduct() {
         Product product = createProduct(PRODUCT_4, PRODUCT_TITLE_4, CATEGORY_2);
+        product.setPrice(createPrice("12", "15", "10", ""));
 
-        Set<Price> priceList = initializePriceList(sortedPrice);
 
-        priceList.add(createPrice(PRODUCT_4, 15, LocalDate.of(2011, 2, 23)));
-        priceList.add(createPrice(PRODUCT_4, 12, LocalDate.of(2013, 2, 23)));
-        priceList.add(createPrice(PRODUCT_4, 10, LocalDate.of(2008, 2, 23)));
-        product.setPricesList(priceList);
-
-        Set<ColorSwathe> colorSwathes = createColorSwathes(PRODUCT_4, "sku7", "sku8");
-        product.setColorSwathes(colorSwathes);
+        List<ColorSwatch> colorSwathes = createColorSwathes(PRODUCT_1, "sku3", "sku4");
+        product.setColorSwatches(colorSwathes);
 
         return product;
 
@@ -103,30 +70,29 @@ public class ProductBuilder {
         Product product = new Product();
         product.setProductId(productId);
         product.setTitle(productTitle);
-        product.setCategory(category);
         return product;
     }
 
-    private static Price createPrice(String productId, int priceValue, LocalDate date) {
+    private static Price createPrice(String now, String was, String then1, String then2) {
         Price price = new Price();
-        price.setDate(date);
-        price.setPrice(priceValue);
-        price.setProductId(productId);
+        price.setNow(now);
+        price.setWas(was);
+        price.setThen1(then1);
+        price.setThen2(then2);
 
         return price;
     }
 
-    private static ColorSwathe createColorSwathe(String skuId, String productId, String color) {
-        ColorSwathe colorSwathe = new ColorSwathe();
-        colorSwathe.setSkuid(skuId);
-        colorSwathe.setProductId(productId);
+    private static ColorSwatch createColorSwathe(String skuId, String productId, String color) {
+        ColorSwatch colorSwathe = new ColorSwatch();
+        colorSwathe.setSkuId(skuId);
         colorSwathe.setColor(color);
 
         return colorSwathe;
     }
 
-    private static Set<ColorSwathe> createColorSwathes(String productId, String sku1, String sku2) {
-        Set<ColorSwathe> colorSwathes = new HashSet<>();
+    private static List<ColorSwatch> createColorSwathes(String productId, String sku1, String sku2) {
+        List<ColorSwatch> colorSwathes = new ArrayList<>();
         colorSwathes.add(createColorSwathe(sku1, productId, RED));
         colorSwathes.add(createColorSwathe(sku2, productId, GREEN));
         return colorSwathes;
