@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -37,8 +38,17 @@ public class ProductServiceTest {
 
     @Test
     public void shouldReturnEmptyListIfPriceHasNotDropped(){
-        JlProducts aaa = new JlProducts();
-        when(restTemplate.getForObject(restUri, JlProducts.class)).thenReturn(aaa);
+        JlProducts jlProducts = new JlProducts();
+        when(restTemplate.getForObject(restUri, JlProducts.class)).thenReturn(jlProducts);
+
+        List<Product> productsWithPriceDrops = productService.getProductsWithPriceDrops();
+
+        assertThat(productsWithPriceDrops, is(emptyList()));
+    }
+
+    @Test
+    public void shouldReturnEmptyListIfExceptionIsThrown(){
+        when(restTemplate.getForObject(restUri, JlProducts.class)).thenThrow(RestClientException.class);
 
         List<Product> productsWithPriceDrops = productService.getProductsWithPriceDrops();
 

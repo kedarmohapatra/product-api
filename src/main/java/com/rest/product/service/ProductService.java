@@ -3,6 +3,7 @@ package com.rest.product.service;
 import jl.products.model.JlProducts;
 import jl.products.model.Price;
 import jl.products.model.Product;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -23,7 +24,12 @@ public class ProductService {
     }
 
     public List<Product> getProductsWithPriceDrops() {
-        JlProducts jlProducts = restTemplate.getForObject(restURI, JlProducts.class);
+        JlProducts jlProducts;
+        try {
+            jlProducts = restTemplate.getForObject(restURI, JlProducts.class);
+        } catch (RestClientException ex){
+            jlProducts = new JlProducts();
+        }
 
         List<Product> reducedProducts = new ArrayList<>();
         if (jlProducts != null) {
