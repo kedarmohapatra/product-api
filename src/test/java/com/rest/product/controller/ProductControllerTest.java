@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.rest.product.builder.ProductBuilder.createFirstProduct;
@@ -45,6 +46,15 @@ public class ProductControllerTest {
 
         List<ProductDto> productDtoList = createDtoList(productList);
         assertThat(productsWithPriceDrop, is(equalTo(productDtoList)));
+    }
+
+    @Test
+    public void shouldReturnEmptyDto(){
+        when(productService.getProductsWithPriceDrops()).thenReturn(new ArrayList<>());
+
+        List<ProductDto> productsWithPriceDrop = productController.getProductsWithPriceDrop(PERC_DSCOUNT);
+
+        assertThat(productsWithPriceDrop, is(equalTo(new ArrayList<>())));
     }
 
     private List<ProductDto> createDtoList(List<Product> productList) {

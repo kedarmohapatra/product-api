@@ -32,7 +32,7 @@ public class ProductServiceTest {
     private ProductService productService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         productService = new ProductService(restTemplate, restUri);
     }
 
